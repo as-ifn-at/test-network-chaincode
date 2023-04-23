@@ -1,3 +1,4 @@
+#!/bin/bash
 pname="basic"
 echo "------------Package Chaincode-----------"
 cd chaincode-go && GO111MODULE=on go mod vendor
@@ -37,7 +38,12 @@ peer lifecycle chaincode install ${pname}.tar.gz
 echo "------------Success-----------"
 
 peer lifecycle chaincode queryinstalled
-export CC_PACKAGE_ID=${pname}_1.0:90779a8c144c84a16c6f54770b4352243f6875a632f3efa45103a8542ed88751
+
+b=$(peer lifecycle chaincode queryinstalled)
+c=$(echo ${b} | grep -aob ',' | grep -oE '[0-9]+')
+pid=$(echo $b| cut -c 43-${c})
+
+export CC_PACKAGE_ID=${pid}
 
 echo "=======Approve chaincode by all 3 orgs======="
 
