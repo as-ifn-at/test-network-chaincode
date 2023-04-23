@@ -1,8 +1,12 @@
-Run:
+''Prerequisites''
 
-1) sudo chmod +x start.sh
-2) sudo chmod +x packageDeploy.sh
+https://hyperledger-fabric.readthedocs.io/en/latest/prereqs.html
 
-To start the network and deploy chaincode run:
+''Run:''
 
-./start.sh
+> sudo chmod +x start.sh
+> sudo chmod +x packageDeploy.sh
+
+''To start the network and deploy chaincode run:''
+
+>./start.sh
