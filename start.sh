@@ -6,4 +6,4 @@ sleep 6
 cd ..
 echo "---------Added all 3 organizations-----------"
 
-./packageDeploy.sh
+# ./packageDeploy.sh

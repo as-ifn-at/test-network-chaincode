@@ -8,6 +8,10 @@ https://hyperledger-fabric.readthedocs.io/en/latest/install.html
 > sudo chmod +x start.sh
 > sudo chmod +x packageDeploy.sh
 
-# To start the network and deploy chaincode run:
+# To start the network:
 
 >./start.sh
+
+# To deploy chaincode run:
+
+>./packageDeploy.sh
