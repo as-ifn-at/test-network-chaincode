@@ -46,6 +46,10 @@ func findEligibleAmt() (bool, float64) {
 }
 
 func (s *SmartContract) EnrollBanks(ctx contractapi.TransactionContextInterface) error {
+	if msp, err := ctx.GetClientIdentity().GetMSPID(); msp != "PlatformMSP" && err != nil {
+		return errors.New("this operation can only be done by Platform")
+	}
+	
 	banks := []Bank{
 		{BankId: "bank1", BankName: "HDFC", TotalValue: MaxValueForLoan, InterestRate: 5.0},
 		{BankId: "bank2", BankName: "SBI", TotalValue: MaxValueForLoan, InterestRate: 4.0},
@@ -96,6 +100,9 @@ func (s *SmartContract) SMEExists(ctx contractapi.TransactionContextInterface, i
 }
 
 func (s *SmartContract) EnrollSME(ctx contractapi.TransactionContextInterface, name string, aadharNo string) error {
+	if msp, err := ctx.GetClientIdentity().GetMSPID(); msp != "PlatformMSP" && err != nil {
+		return errors.New("this operation can only be done by Platform")
+	}
 	exists, err := s.SMEExists(ctx, aadharNo)
 	if err != nil {
 		return err
@@ -153,7 +160,9 @@ func (s *SmartContract) NewLoan(id string, itype string, liability string, amoun
 
 func (s *SmartContract) Issueloan(ctx contractapi.TransactionContextInterface, aadharNo string, id string,
 	itype string, liability string, amount float64, duration int, bankId string) error {
-
+	if msp, err := ctx.GetClientIdentity().GetMSPID(); msp != "BankMSP" && err != nil {
+		return errors.New("this operation can only be done by Bank")
+	}
 	loan := s.NewLoan(id, itype, liability, amount, duration, 3.0, bankId)
 	bank, err := s.ReadBank(ctx, bankId)
 	if err != nil {
@@ -267,7 +276,6 @@ func (s *SmartContract) AssetExists(ctx contractapi.TransactionContextInterface,
 
 // 	return assetJSON != nil, nil
 // }
-
 
 // // Asset describes basic details of what makes up a simple asset
 // // Insert struct field in alphabetic order => to achieve determinism across languages
