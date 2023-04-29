@@ -49,7 +49,7 @@ async function Query() {
         // Disconnect from the gateway.
         await gateway.disconnect();
         console.log(`Transaction has been evaluated, result is: ${result.toString()}`);
-        return result.toString()
+        return JSON.parse(result.toString())
     } catch (error) {
         console.error(`Failed to evaluate transaction: ${error}`);
         process.exit(1);

@@ -1,17 +1,17 @@
 {
-  "name": "sme",
+  "name": "services",
   "version": "1.0.0",
-  "description": "testing api",
-  "main": "app.js",
+  "description": "",
+  "main": "chaincode.service.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.20.2",
     "express": "^4.18.2",
-    "fabric-ca-client": "^2.2.17",
-    "fabric-network": "^2.2.17",
     "nodemon": "^2.0.22"
   }
 }

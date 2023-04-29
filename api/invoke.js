@@ -10,7 +10,7 @@ const { Gateway, Wallets } = require('fabric-network');
 const fs = require('fs');
 const path = require('path');
 
-async function InvokeTxn() {
+async function InvokeTxn(funcName, ...arg) {
     try {
         // load the network configuration
         const ccpPath = path.resolve(__dirname, '..', '..', 'test-network', 'organizations', 'peerOrganizations', 'bank.creditrisk.com', 'connection-bank.json');
@@ -43,10 +43,10 @@ async function InvokeTxn() {
         // createCar transaction - requires 5 argument, ex: ('createCar', 'CAR12', 'Honda', 'Accord', 'Black', 'Tom')
         // changeCarOwner transaction - requires 2 args , ex: ('changeCarOwner', 'CAR12', 'Dave')
         // let resp
-        const transaction = await contract.submitTransaction('SaveDocument',"6789", 12.5, '["klsa"]',
-        12.4, 12.4, "jsd", 1.2, 34.3, "jksd", 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, "jnksd", 12.4, 823.2)
+        // const transaction = await contract.submitTransaction('SaveDocument',"67801", 12.5, '["klsa"]',
+        // 12.4, 12.4, "jsd", 1.2, 34.3, "jksd", 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, "jnksd", 12.4, 823.2)
         // transaction.setTransient({hash:Buffer.from("diptesh")})
-        // await contract.submitTransaction('EnrollSME', "jk", "67801")
+        const transaction= await contract.submitTransaction(funcName, ...arg)
     //    await contract.submitTransaction('EnrollSME', "jk", "67891").then((res)=>{
     //     var resp = res + "successfully riturn"
     //    });
@@ -63,5 +63,5 @@ async function InvokeTxn() {
     
     }
 }
-InvokeTxn()
+// InvokeTxn()
 module.exports = {InvokeTxn}

@@ -80,3 +80,16 @@ peer lifecycle chaincode commit -o localhost:7050 --ordererTLSHostnameOverride o
 echo "------------Success-----------"
 
 peer lifecycle chaincode querycommitted --channelID loan --name ${pname}
+
+cd api
+
+rm -rf wallet
+node enrollBank.js
+node enrollCim.js
+node enroll Platform.js
+
+node registerBank.js
+node registerCim.js
+node registerPlatform.js
+
+cd ..
