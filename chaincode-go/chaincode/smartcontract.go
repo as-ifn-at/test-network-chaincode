@@ -25,6 +25,25 @@ type Loan struct {
 	InterestRate float64
 }
 
+type Document struct {
+	AnnualRevenue          float64
+	CreditHistory          []string
+	CreditUtilization      float64
+	DebtToEquityRatio      float64
+	DefaultHistory         string
+	IndustryRisk           float64
+	Liquidity              float64
+	Location               string
+	MarketConditions       float64
+	NetProfitMargin        float64
+	PaymentHistory         float64
+	Profitability          float64
+	RecentCreditInquiries  float64
+	Solvency               float64
+	TypesOfCreditUsed      string
+	YearsInBusiness        float64
+	CreditScoreCalibration float64
+}
 type Bank struct {
 	BankId       string
 	BankName     string
@@ -34,10 +53,11 @@ type Bank struct {
 
 type SME struct {
 	Name        string
-	AadharNo    string
+	GstinNo    string
 	Eligibility bool
 	EligibleAmt float64
 	Loans       []Loan
+	Docs      Document
 }
 
 func findEligibleAmt() (bool, float64) {
@@ -49,7 +69,7 @@ func (s *SmartContract) EnrollBanks(ctx contractapi.TransactionContextInterface)
 	if msp, err := ctx.GetClientIdentity().GetMSPID(); msp != "PlatformMSP" && err != nil {
 		return errors.New("this operation can only be done by Platform")
 	}
-	
+
 	banks := []Bank{
 		{BankId: "bank1", BankName: "HDFC", TotalValue: MaxValueForLoan, InterestRate: 5.0},
 		{BankId: "bank2", BankName: "SBI", TotalValue: MaxValueForLoan, InterestRate: 4.0},
@@ -99,22 +119,22 @@ func (s *SmartContract) SMEExists(ctx contractapi.TransactionContextInterface, i
 	return assetJSON != nil, nil
 }
 
-func (s *SmartContract) EnrollSME(ctx contractapi.TransactionContextInterface, name string, aadharNo string) error {
+func (s *SmartContract) EnrollSME(ctx contractapi.TransactionContextInterface, name string, gstinNo string) error {
 	if msp, err := ctx.GetClientIdentity().GetMSPID(); msp != "PlatformMSP" && err != nil {
 		return errors.New("this operation can only be done by Platform")
 	}
-	exists, err := s.SMEExists(ctx, aadharNo)
+	exists, err := s.SMEExists(ctx, gstinNo)
 	if err != nil {
 		return err
 	}
 	if exists {
-		return fmt.Errorf("the asset %s already exists", aadharNo)
+		return fmt.Errorf("the asset %s already exists", gstinNo)
 	}
 	loans := []Loan{}
 	eligiblity, eligibleAmt := findEligibleAmt()
 	sme := SME{
 		Name:        name,
-		AadharNo:    aadharNo,
+		GstinNo:    gstinNo,
 		Eligibility: eligiblity,
 		EligibleAmt: eligibleAmt,
 		Loans:       loans,
@@ -124,17 +144,17 @@ func (s *SmartContract) EnrollSME(ctx contractapi.TransactionContextInterface, n
 		return err
 	}
 
-	return ctx.GetStub().PutState(aadharNo, smeJSON)
+	return ctx.GetStub().PutState(gstinNo, smeJSON)
 }
 
-func (s *SmartContract) ReadSME(ctx contractapi.TransactionContextInterface, aadharNo string) (*SME, error) {
+func (s *SmartContract) ReadSME(ctx contractapi.TransactionContextInterface, gstinNo string) (*SME, error) {
 
-	smeJSON, err := ctx.GetStub().GetState(aadharNo)
+	smeJSON, err := ctx.GetStub().GetState(gstinNo)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read from world state: %v", err)
 	}
 	if smeJSON == nil {
-		return nil, fmt.Errorf("the asset %s does not exist", aadharNo)
+		return nil, fmt.Errorf("the asset %s does not exist", gstinNo)
 	}
 
 	var sme SME
@@ -158,7 +178,7 @@ func (s *SmartContract) NewLoan(id string, itype string, liability string, amoun
 	}
 }
 
-func (s *SmartContract) Issueloan(ctx contractapi.TransactionContextInterface, aadharNo string, id string,
+func (s *SmartContract) Issueloan(ctx contractapi.TransactionContextInterface, gstinNo string, id string,
 	itype string, liability string, amount float64, duration int, bankId string) error {
 	if msp, err := ctx.GetClientIdentity().GetMSPID(); msp != "BankMSP" && err != nil {
 		return errors.New("this operation can only be done by Bank")
@@ -168,7 +188,7 @@ func (s *SmartContract) Issueloan(ctx contractapi.TransactionContextInterface, a
 	if err != nil {
 		return errors.New("bank does not exist")
 	}
-	sme, _ := s.ReadSME(ctx, aadharNo)
+	sme, _ := s.ReadSME(ctx, gstinNo)
 	if sme.EligibleAmt < loan.Amount {
 		return errors.New("Loan amount invalid")
 	}
@@ -188,7 +208,7 @@ func (s *SmartContract) Issueloan(ctx contractapi.TransactionContextInterface, a
 		return err
 	}
 
-	return ctx.GetStub().PutState(sme.AadharNo, assetJSON)
+	return ctx.GetStub().PutState(sme.GstinNo, assetJSON)
 }
 
 func loanExists(loans []Loan, loanId string) int {
@@ -209,10 +229,10 @@ func remove(loans []Loan, loanId string) []Loan {
 	return nil
 }
 
-func (s *SmartContract) RepayLoan(ctx contractapi.TransactionContextInterface, aadharNo string, loanId string) error {
+func (s *SmartContract) RepayLoan(ctx contractapi.TransactionContextInterface, gstinNo string, loanId string) error {
 
 	// loan := s.NewLoan(id, itype, liability, amount, duration, 3.0)
-	sme, err := s.ReadSME(ctx, aadharNo)
+	sme, err := s.ReadSME(ctx, gstinNo)
 	if err != nil {
 		return errors.New("SME doesn't exist")
 	}
@@ -241,7 +261,7 @@ func (s *SmartContract) RepayLoan(ctx contractapi.TransactionContextInterface, a
 		return err
 	}
 
-	return ctx.GetStub().PutState(sme.AadharNo, assetJSON)
+	return ctx.GetStub().PutState(sme.GstinNo, assetJSON)
 }
 
 // DeleteAsset deletes an given asset from the world state. here asset can be bank or sme
@@ -265,6 +285,45 @@ func (s *SmartContract) AssetExists(ctx contractapi.TransactionContextInterface,
 	}
 
 	return assetJSON != nil, nil
+}
+func (s *SmartContract) SaveDocument(ctx contractapi.TransactionContextInterface, gstinNo string) error {
+
+	// loan := s.NewLoan(id, itype, liability, amount, duration, 3.0)
+	sme, err := s.ReadSME(ctx, gstinNo)
+	if err != nil {
+		return errors.New("SME doesn't exist")
+	}
+   
+	// idx := loanExists(sme.Loans, gstinNo)
+
+	// if idx == -1 {
+	// 	return errors.New("loan does not exist")
+	// }
+	data , err := ctx.GetStub().GetTransient()
+	if err != nil {
+		return err
+	}
+	var docJson Document;
+	
+	err = json.Unmarshal(data["GstinNo"], &docJson)
+	if err != nil {
+		return err
+	}
+	sme.Docs = docJson
+	smeData,err := json.Marshal(sme)
+	if err != nil {
+		return err
+	}
+
+	return ctx.GetStub().PutState(sme.GstinNo, smeData)
+}
+func Validate( data Document) (float64) {
+
+	creditScore := ((data.PaymentHistory) * 0.2) + (data.CreditUtilization * 0.2) + (float64(len(data.CreditHistory)) * 0.1) + (data.RecentCreditInquiries * 0.1) + (data.Liquidity * 0.1) + (data.Profitability * 0.1) + (data.Solvency * 0.05)  + (data.IndustryRisk * 0.02) + (data.MarketConditions * 0.02)
+
+	return creditScore
+
+
 }
 
 // AssetExists returns true when asset with given ID exists in world state

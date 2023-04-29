@@ -27,9 +27,9 @@ async function main() {
         // console.log(`Wallet path: ${walletPath}`);
 
         // Check to see if we've already enrolled the user.
-        const userIdentity = await wallet.get('bankUser');
+        const userIdentity = await wallet.get('cimUser');
         if (userIdentity) {
-            console.log('An identity for the user "appUser" already exists in the wallet');
+            console.log('An identity for the user "cimUser" already exists in the wallet');
             return;
         }
 
@@ -49,8 +49,8 @@ async function main() {
         // Register the user, enroll the user, and import the new identity into the wallet.
         // console.log(`log1 ${adminUser}`)
         const secret = await ca.register({
-            affiliation: 'bank.department1',
-            enrollmentID: 'bankUser',
+            affiliation: 'cim.department1',
+            enrollmentID: 'cimUser',
             role: 'client'
         }, adminUser);
         console.log(`log 2-- ${secret}`)
@@ -67,11 +67,11 @@ async function main() {
             mspId: 'CimMSP',
             type: 'X.509',
         };
-        await wallet.put('appUser', x509Identity);
-        console.log('Successfully registered and enrolled admin user "appUser" and imported it into the wallet');
+        await wallet.put('cimUser', x509Identity);
+        console.log('Successfully registered and enrolled admin user "cimUser" and imported it into the wallet');
 
     } catch (error) {
-        console.error(`Failed to register user "appUser": ${error}`);
+        console.error(`Failed to register user "cimUser": ${error}`);
         process.exit(1);
     }
 }
