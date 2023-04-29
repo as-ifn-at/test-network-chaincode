@@ -26,7 +26,7 @@ function yaml_ccp {
         organizations/ccp-template.yaml | sed -e $'s/\\\\n/\\\n          /g'
 }
 
-ORG=1
+ORG="bank"
 P0PORT=7051
 CAPORT=7054
 PEERPEM=organizations/peerOrganizations/bank.creditrisk.com/tlsca/tlsca.bank.creditrisk.com-cert.pem
@@ -35,7 +35,7 @@ CAPEM=organizations/peerOrganizations/bank.creditrisk.com/ca/ca.bank.creditrisk.
 echo "$(json_ccp $ORG $P0PORT $CAPORT $PEERPEM $CAPEM)" > organizations/peerOrganizations/bank.creditrisk.com/connection-bank.json
 echo "$(yaml_ccp $ORG $P0PORT $CAPORT $PEERPEM $CAPEM)" > organizations/peerOrganizations/bank.creditrisk.com/connection-bank.yaml
 
-ORG=2
+ORG="platform"
 P0PORT=9051
 CAPORT=8054
 PEERPEM=organizations/peerOrganizations/platform.creditrisk.com/tlsca/tlsca.platform.creditrisk.com-cert.pem

@@ -26,7 +26,7 @@ function yaml_ccp {
         ccp-template.yaml | sed -e $'s/\\\\n/\\\n          /g'
 }
 
-ORG=3
+ORG="cim"
 P0PORT=11051
 CAPORT=11054
 PEERPEM=../organizations/peerOrganizations/cim.creditrisk.com/tlsca/tlsca.cim.creditrisk.com-cert.pem

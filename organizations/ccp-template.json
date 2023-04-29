@@ -1,8 +1,8 @@
 {
-    "name": "test-network-org${ORG}",
+    "name": "test-network-${ORG}",
     "version": "1.0.0",
     "client": {
-        "organization": "Org${ORG}",
+        "organization": "${ORG}",
         "connection": {
             "timeout": {
                 "peer": {
@@ -12,32 +12,32 @@
         }
     },
     "organizations": {
-        "Org${ORG}": {
-            "mspid": "Org${ORG}MSP",
+        "${ORG}": {
+            "mspid": "${ORG}MSP",
             "peers": [
-                "peer0.org${ORG}.creditrisk.com"
+                "peer0.${ORG}.creditrisk.com"
             ],
             "certificateAuthorities": [
-                "ca.org${ORG}.creditrisk.com"
+                "ca.${ORG}.creditrisk.com"
             ]
         }
     },
     "peers": {
-        "peer0.org${ORG}.creditrisk.com": {
+        "peer0.${ORG}.creditrisk.com": {
             "url": "grpcs://localhost:${P0PORT}",
             "tlsCACerts": {
                 "pem": "${PEERPEM}"
             },
             "grpcOptions": {
-                "ssl-target-name-override": "peer0.org${ORG}.creditrisk.com",
-                "hostnameOverride": "peer0.org${ORG}.creditrisk.com"
+                "ssl-target-name-override": "peer0.${ORG}.creditrisk.com",
+                "hostnameOverride": "peer0.${ORG}.creditrisk.com"
             }
         }
     },
     "certificateAuthorities": {
-        "ca.org${ORG}.creditrisk.com": {
+        "ca.${ORG}.creditrisk.com": {
             "url": "https://localhost:${CAPORT}",
-            "caName": "ca-org${ORG}",
+            "caName": "ca-${ORG}",
             "tlsCACerts": {
                 "pem": ["${CAPEM}"]
             },
