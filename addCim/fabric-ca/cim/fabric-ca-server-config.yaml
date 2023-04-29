@@ -242,6 +242,9 @@ affiliations:
       - department2
    platform:
       - department1
+   cim:
+      - department1
+      - department2
 
 #############################################################################
 #  Signing section

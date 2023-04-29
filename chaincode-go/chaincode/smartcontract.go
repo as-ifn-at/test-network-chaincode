@@ -53,11 +53,11 @@ type Bank struct {
 
 type SME struct {
 	Name        string
-	GstinNo    string
+	GstinNo     string
 	Eligibility bool
 	EligibleAmt float64
 	Loans       []Loan
-	Docs      Document
+	Docs        Document
 }
 
 func findEligibleAmt() (bool, float64) {
@@ -134,7 +134,7 @@ func (s *SmartContract) EnrollSME(ctx contractapi.TransactionContextInterface, n
 	eligiblity, eligibleAmt := findEligibleAmt()
 	sme := SME{
 		Name:        name,
-		GstinNo:    gstinNo,
+		GstinNo:     gstinNo,
 		Eligibility: eligiblity,
 		EligibleAmt: eligibleAmt,
 		Loans:       loans,
@@ -146,6 +146,8 @@ func (s *SmartContract) EnrollSME(ctx contractapi.TransactionContextInterface, n
 
 	return ctx.GetStub().PutState(gstinNo, smeJSON)
 }
+
+
 
 func (s *SmartContract) ReadSME(ctx contractapi.TransactionContextInterface, gstinNo string) (*SME, error) {
 
@@ -293,36 +295,35 @@ func (s *SmartContract) SaveDocument(ctx contractapi.TransactionContextInterface
 	if err != nil {
 		return errors.New("SME doesn't exist")
 	}
-   
+
 	// idx := loanExists(sme.Loans, gstinNo)
 
 	// if idx == -1 {
 	// 	return errors.New("loan does not exist")
 	// }
-	data , err := ctx.GetStub().GetTransient()
+	data, err := ctx.GetStub().GetTransient()
 	if err != nil {
 		return err
 	}
-	var docJson Document;
-	
+	var docJson Document
+
 	err = json.Unmarshal(data["GstinNo"], &docJson)
 	if err != nil {
 		return err
 	}
 	sme.Docs = docJson
-	smeData,err := json.Marshal(sme)
+	smeData, err := json.Marshal(sme)
 	if err != nil {
 		return err
 	}
 
 	return ctx.GetStub().PutState(sme.GstinNo, smeData)
 }
-func Validate( data Document) (float64) {
+func Validate(data Document) float64 {
 
-	creditScore := ((data.PaymentHistory) * 0.2) + (data.CreditUtilization * 0.2) + (float64(len(data.CreditHistory)) * 0.1) + (data.RecentCreditInquiries * 0.1) + (data.Liquidity * 0.1) + (data.Profitability * 0.1) + (data.Solvency * 0.05)  + (data.IndustryRisk * 0.02) + (data.MarketConditions * 0.02)
+	creditScore := ((data.PaymentHistory) * 0.2) + (data.CreditUtilization * 0.2) + (float64(len(data.CreditHistory)) * 0.1) + (data.RecentCreditInquiries * 0.1) + (data.Liquidity * 0.1) + (data.Profitability * 0.1) + (data.Solvency * 0.05) + (data.IndustryRisk * 0.02) + (data.MarketConditions * 0.02)
 
 	return creditScore
-
 
 }
 
