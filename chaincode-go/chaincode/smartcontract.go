@@ -58,7 +58,7 @@ type SME struct {
 	EligibleAmt float64
 	Loans       []Loan
 	Docs        Document
-	creditScore float64
+	CreditScore float64
 }
 
 func findEligibleAmt() (bool, float64) {
@@ -132,6 +132,7 @@ func (s *SmartContract) EnrollSME(ctx contractapi.TransactionContextInterface, n
 		return fmt.Errorf("the asset %s already exists", gstinNo)
 	}
 	loans := []Loan{}
+	cr := []string{}
 	eligiblity, eligibleAmt := findEligibleAmt()
 	sme := SME{
 		Name:        name,
@@ -140,6 +141,7 @@ func (s *SmartContract) EnrollSME(ctx contractapi.TransactionContextInterface, n
 		EligibleAmt: eligibleAmt,
 		Loans:       loans,
 	}
+	sme.Docs.CreditHistory = cr
 	smeJSON, err := json.Marshal(sme)
 	if err != nil {
 		return err
@@ -357,10 +359,12 @@ func (s *SmartContract) SaveDocument(ctx contractapi.TransactionContextInterface
 	// if idx == -1 {
 	// 	return errors.New("loan does not exist")
 	// }
-	// data, err := ctx.GetStub().GetTransient()
-	// if err != nil {
-	// 	return err
-	// }
+	data, err := ctx.GetStub().GetTransient()
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(data)
 	// var docJson Document
 
 	// err = json.Unmarshal(data["GstinNo"], &docJson)
@@ -369,7 +373,7 @@ func (s *SmartContract) SaveDocument(ctx contractapi.TransactionContextInterface
 	// }
 	// sme.Docs = docJson
 	cred := Validate(*doc)
-	sme.creditScore = cred
+	sme.CreditScore = cred
 	smeData, err := json.Marshal(sme)
 	if err != nil {
 		return err

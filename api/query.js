@@ -7,14 +7,15 @@
 'use strict';
 
 const { Gateway, Wallets } = require('fabric-network');
-const fs = require('fs');
 const path = require('path');
+const fs = require('fs');
 
-async function InvokeTxn() {
+
+async function Query() {
     try {
         // load the network configuration
         const ccpPath = path.resolve(__dirname, '..', '..', 'test-network', 'organizations', 'peerOrganizations', 'bank.creditrisk.com', 'connection-bank.json');
-        let ccp = JSON.parse(fs.readFileSync(ccpPath, 'utf8'));
+        const ccp = JSON.parse(fs.readFileSync(ccpPath, 'utf8'));
 
         // Create a new file system based wallet for managing identities.
         const walletPath = path.join(process.cwd(), 'wallet');
@@ -39,29 +40,20 @@ async function InvokeTxn() {
         // Get the contract from the network.
         const contract = network.getContract('basic');
 
-        // Submit the specified transaction.
-        // createCar transaction - requires 5 argument, ex: ('createCar', 'CAR12', 'Honda', 'Accord', 'Black', 'Tom')
-        // changeCarOwner transaction - requires 2 args , ex: ('changeCarOwner', 'CAR12', 'Dave')
-        // let resp
-        const transaction = await contract.submitTransaction('SaveDocument',"6789", 12.5, '["klsa"]',
-        12.4, 12.4, "jsd", 1.2, 34.3, "jksd", 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, "jnksd", 12.4, 823.2)
-        // transaction.setTransient({hash:Buffer.from("diptesh")})
-        // await contract.submitTransaction('EnrollSME', "jk", "67801")
-    //    await contract.submitTransaction('EnrollSME', "jk", "67891").then((res)=>{
-    //     var resp = res + "successfully riturn"
-    //    });
-        console.log('Transaction has been submitted');
+        // Evaluate the specified transaction.
+        // queryCar transaction - requires 1 argument, ex: ('queryCar', 'CAR4')
+        // queryAllCars transaction - requires no arguments, ex: ('queryAllCars')
+        const result = await contract.evaluateTransaction('ReadSME', "67801");
         
+
         // Disconnect from the gateway.
-        
         await gateway.disconnect();
-        return transaction;
-        
+        console.log(`Transaction has been evaluated, result is: ${result.toString()}`);
+        return result.toString()
     } catch (error) {
-        console.error(`Failed to submit transaction: ${error}`);
+        console.error(`Failed to evaluate transaction: ${error}`);
         process.exit(1);
-    
     }
 }
-InvokeTxn()
-module.exports = {InvokeTxn}
+
+module.exports = {Query}
