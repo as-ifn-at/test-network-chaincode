@@ -58,6 +58,7 @@ type SME struct {
 	EligibleAmt float64
 	Loans       []Loan
 	Docs        Document
+	creditScore float64
 }
 
 func findEligibleAmt() (bool, float64) {
@@ -147,8 +148,6 @@ func (s *SmartContract) EnrollSME(ctx contractapi.TransactionContextInterface, n
 	return ctx.GetStub().PutState(gstinNo, smeJSON)
 }
 
-
-
 func (s *SmartContract) ReadSME(ctx contractapi.TransactionContextInterface, gstinNo string) (*SME, error) {
 
 	smeJSON, err := ctx.GetStub().GetState(gstinNo)
@@ -182,9 +181,7 @@ func (s *SmartContract) NewLoan(id string, itype string, liability string, amoun
 
 func (s *SmartContract) Issueloan(ctx contractapi.TransactionContextInterface, gstinNo string, id string,
 	itype string, liability string, amount float64, duration int, bankId string) error {
-	if msp, err := ctx.GetClientIdentity().GetMSPID(); msp != "BankMSP" && err != nil {
-		return errors.New("this operation can only be done by Bank")
-	}
+
 	loan := s.NewLoan(id, itype, liability, amount, duration, 3.0, bankId)
 	bank, err := s.ReadBank(ctx, bankId)
 	if err != nil {
@@ -288,37 +285,98 @@ func (s *SmartContract) AssetExists(ctx contractapi.TransactionContextInterface,
 
 	return assetJSON != nil, nil
 }
-func (s *SmartContract) SaveDocument(ctx contractapi.TransactionContextInterface, gstinNo string) error {
 
+func createDocument(annualRevenue float64,
+	creditHistory []string,
+	creditUtilization float64,
+	debtToEquityRatio float64,
+	defaultHistory string,
+	industryRisk float64,
+	liquidity float64,
+	location string,
+	marketConditions float64,
+	netProfitMargin float64,
+	paymentHistory float64,
+	profitability float64,
+	recentCreditInquiries float64,
+	solvency float64,
+	typesOfCreditUsed string,
+	yearsInBusiness float64,
+	creditScoreCalibration float64) *Document {
+
+	return &Document{
+		AnnualRevenue:          annualRevenue,
+		CreditHistory:          creditHistory,
+		CreditUtilization:      creditUtilization,
+		DebtToEquityRatio:      debtToEquityRatio,
+		DefaultHistory:         defaultHistory,
+		IndustryRisk:           industryRisk,
+		Liquidity:              liquidity,
+		Location:               location,
+		MarketConditions:       marketConditions,
+		NetProfitMargin:        netProfitMargin,
+		PaymentHistory:         paymentHistory,
+		Profitability:          profitability,
+		RecentCreditInquiries:  recentCreditInquiries,
+		Solvency:               solvency,
+		TypesOfCreditUsed:      typesOfCreditUsed,
+		YearsInBusiness:        yearsInBusiness,
+		CreditScoreCalibration: creditScoreCalibration,
+	}
+}
+
+func (s *SmartContract) SaveDocument(ctx contractapi.TransactionContextInterface, gstinNo string, annualRevenue float64,
+	creditHistory []string,
+	creditUtilization float64,
+	debtToEquityRatio float64,
+	defaultHistory string,
+	industryRisk float64,
+	liquidity float64,
+	location string,
+	marketConditions float64,
+	netProfitMargin float64,
+	paymentHistory float64,
+	profitability float64,
+	recentCreditInquiries float64,
+	solvency float64,
+	typesOfCreditUsed string,
+	yearsInBusiness float64,
+	creditScoreCalibration float64) error {
+
+	doc := createDocument(annualRevenue, creditHistory, creditUtilization, debtToEquityRatio, defaultHistory, industryRisk, liquidity, location,
+		marketConditions, netProfitMargin, paymentHistory, profitability, recentCreditInquiries, solvency, typesOfCreditUsed, yearsInBusiness, creditScoreCalibration)
 	// loan := s.NewLoan(id, itype, liability, amount, duration, 3.0)
 	sme, err := s.ReadSME(ctx, gstinNo)
 	if err != nil {
 		return errors.New("SME doesn't exist")
 	}
 
+	sme.Docs = *doc
 	// idx := loanExists(sme.Loans, gstinNo)
 
 	// if idx == -1 {
 	// 	return errors.New("loan does not exist")
 	// }
-	data, err := ctx.GetStub().GetTransient()
-	if err != nil {
-		return err
-	}
-	var docJson Document
+	// data, err := ctx.GetStub().GetTransient()
+	// if err != nil {
+	// 	return err
+	// }
+	// var docJson Document
 
-	err = json.Unmarshal(data["GstinNo"], &docJson)
-	if err != nil {
-		return err
-	}
-	sme.Docs = docJson
+	// err = json.Unmarshal(data["GstinNo"], &docJson)
+	// if err != nil {
+	// 	return err
+	// }
+	// sme.Docs = docJson
+	cred := Validate(*doc)
+	sme.creditScore = cred
 	smeData, err := json.Marshal(sme)
 	if err != nil {
 		return err
 	}
-
 	return ctx.GetStub().PutState(sme.GstinNo, smeData)
 }
+
 func Validate(data Document) float64 {
 
 	creditScore := ((data.PaymentHistory) * 0.2) + (data.CreditUtilization * 0.2) + (float64(len(data.CreditHistory)) * 0.1) + (data.RecentCreditInquiries * 0.1) + (data.Liquidity * 0.1) + (data.Profitability * 0.1) + (data.Solvency * 0.05) + (data.IndustryRisk * 0.02) + (data.MarketConditions * 0.02)
