@@ -30,13 +30,13 @@ app.post("/api/addDoc", async (req, res) => {
 // Enroll Banks
 app.get("/api/enrollbank", async (req, res) => {
   let z = await InvokeTxn("EnrollBanks");
-  res.send(`${JSON.stringify(z)}`);
+  res.send(z);
 });
 
 // Enroll SME
 app.get("/api/enrollSME", async (req, res) => {
   let z = await InvokeTxn("EnrollSME", "Asif", "123456");
-  res.send(`${JSON.stringify(z)}`);
+  res.send(z);
 });
 
 // Define a route for handling GET requests

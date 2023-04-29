@@ -11,7 +11,7 @@ const path = require('path');
 const fs = require('fs');
 
 
-async function Query() {
+async function Query(funcName, ...args) {
     try {
         // load the network configuration
         const ccpPath = path.resolve(__dirname, '..', '..', 'test-network', 'organizations', 'peerOrganizations', 'bank.creditrisk.com', 'connection-bank.json');
@@ -43,7 +43,7 @@ async function Query() {
         // Evaluate the specified transaction.
         // queryCar transaction - requires 1 argument, ex: ('queryCar', 'CAR4')
         // queryAllCars transaction - requires no arguments, ex: ('queryAllCars')
-        const result = await contract.evaluateTransaction('ReadSME', "67801");
+        const result = await contract.evaluateTransaction(funcName, ...args);
         
 
         // Disconnect from the gateway.

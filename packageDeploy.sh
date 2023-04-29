@@ -89,7 +89,7 @@ node enrollCim.js
 node enrollPlatform.js
 
 node registerBank.js
-node registerCim.js
+# node registerCim.js
 node registerPlatform.js
 
 cd ..
