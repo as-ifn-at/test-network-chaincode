@@ -1,15 +1,15 @@
-/channel-artifacts/*.tx
-/channel-artifacts/*.block
-/ledgers
-/ledgers-backup
-/channel-artifacts/*.json
-/cim-artifacts/crypto-config/*
-organizations/fabric-ca/ordererOrg/*
-organizations/fabric-ca/bank/*
-organizations/fabric-ca/platform/*
-organizations/ordererOrganizations/*
-organizations/peerOrganizations/*
-system-genesis-block/*
-*.tar.gz
-log.txt
+# /channel-artifacts/*.tx
+# /channel-artifacts/*.block
+# /ledgers
+# /ledgers-backup
+# /channel-artifacts/*.json
+# /cim-artifacts/crypto-config/*
+# organizations/fabric-ca/ordererOrg/*
+# organizations/fabric-ca/bank/*
+# organizations/fabric-ca/platform/*
+# organizations/ordererOrganizations/*
+# organizations/peerOrganizations/*
+# system-genesis-block/*
+# *.tar.gz
+# log.txt
 node_modules
