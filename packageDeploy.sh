@@ -86,7 +86,7 @@ cd api
 rm -rf wallet
 node enrollBank.js
 node enrollCim.js
-node enroll Platform.js
+node enrollPlatform.js
 
 node registerBank.js
 node registerCim.js
