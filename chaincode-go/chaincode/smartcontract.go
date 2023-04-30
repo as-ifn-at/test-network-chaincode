@@ -133,12 +133,12 @@ func (s *SmartContract) EnrollSME(ctx contractapi.TransactionContextInterface, n
 	}
 	loans := []Loan{}
 	cr := []string{}
-	eligiblity, eligibleAmt := findEligibleAmt()
+	// eligiblity, eligibleAmt := findEligibleAmt()
 	sme := SME{
 		Name:        name,
 		GstinNo:     gstinNo,
-		Eligibility: eligiblity,
-		EligibleAmt: eligibleAmt,
+		Eligibility: false,
+		EligibleAmt: 0,
 		Loans:       loans,
 	}
 	sme.Docs.CreditHistory = cr
@@ -384,9 +384,7 @@ func (s *SmartContract) SaveDocument(ctx contractapi.TransactionContextInterface
 func Validate(data Document) float64 {
 
 	creditScore := ((data.PaymentHistory) * 0.2) + (data.CreditUtilization * 0.2) + (float64(len(data.CreditHistory)) * 0.1) + (data.RecentCreditInquiries * 0.1) + (data.Liquidity * 0.1) + (data.Profitability * 0.1) + (data.Solvency * 0.05) + (data.IndustryRisk * 0.02) + (data.MarketConditions * 0.02)
-
 	return creditScore
-
 }
 
 // AssetExists returns true when asset with given ID exists in world state

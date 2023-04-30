@@ -22,33 +22,35 @@ app.get("/api/repayloan", async (req, res) => {
 
 // save Docs
 app.post("/api/addDoc", async (req, res) => {
-  let z = await InvokeTxn('SaveDocument',"123456", 12.5, '["klsa"]',
-  12.4, 12.4, "jsd", 1.2, 34.3, "jksd", 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, "jnksd", 12.4, 823.2);
+  let z = await InvokeTxn('SaveDocument',req.body.GstinNo, req.body.AnnualRevenue, req.body.CreditHistory,
+  req.body.CreditUtilization, req.body.DebtToEquityRatio, req.body.DefaultHistory, req.body.IndustryRiskv, 
+  req.body.Liquidity, req.body.Location, req.body.MarketConditions, req.body.NetProfitMargin, 
+  req.body.PaymentHistory, req.body.Profitability, req.body.RecentCreditInquiries, req.body.Solvency, req.body.TypesOfCreditUsed, req.body.YearsInBusiness, req.body.CreditScoreCalibration);
   res.send(z);
 });
 
 // Enroll Banks
-app.get("/api/enrollbank", async (req, res) => {
+app.post("/api/enrollbanks", async (req, res) => {
   let z = await InvokeTxn("EnrollBanks");
   res.send(z);
 });
 
 // Enroll SME
-app.get("/api/enrollSME", async (req, res) => {
-  let z = await InvokeTxn("EnrollSME", "Asif", "123456");
+app.post("/api/enrollSME", async (req, res) => {
+  console.log(req.body)
+  let z = await InvokeTxn("EnrollSME", req.body.Name, req.body.GstinNo);
   res.send(z);
 });
 
 // Define a route for handling GET requests
 app.post("/api/invoke", async (req, res) => {
   let z = await InvokeTxn();
-
-  res.send(`${JSON.stringify(z)}`);
+  res.send(z);
 });
 
 // Read SME
 app.get("/api/readsme", async (req, res) => {
-  let z = await Query("ReadSME", "123456");
+  let z = await Query("ReadSME", req.body.GstinNo);
   res.send(z);
 });
 
